@@ -94,6 +94,8 @@
     "monitor_hours": "Daily Monitoring Hours",
     "enable_message_push": "Enable Message Push",
     "only_notify_no_record": "Only notify without recording",
+    "scheme_url": "Scheme URL",
+    "scheme_url_hint": "Optional, for deep link navigation",
     "batch_input_tip": "Batch Input (one record per line)",
     "single_input": "Single Input",
     "batch_input": "Batch Input",

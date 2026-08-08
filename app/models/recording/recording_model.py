@@ -19,6 +19,7 @@ class Recording:
         enabled_message_push,
         only_notify_no_record,
         flv_use_direct_download,
+        scheme_url="",
         video_bitrate=None,
     ):
         """
@@ -39,6 +40,7 @@ class Recording:
         :param enabled_message_push: Whether to enable message push.
         :param only_notify_no_record: Whether to only notify when no record is made.
         :param flv_use_direct_download: Whether to use direct downloader to cache FLV stream.
+        :param scheme_url: Custom scheme URL for deep link (optional).
         :param video_bitrate: Custom output video bitrate in kbps, or None to copy the source video stream.
         """
 
@@ -57,6 +59,7 @@ class Recording:
         self.enabled_message_push = enabled_message_push
         self.only_notify_no_record = only_notify_no_record
         self.flv_use_direct_download = flv_use_direct_download
+        self.scheme_url = scheme_url
         self.video_bitrate = video_bitrate
         self.scheduled_time_range = None
         self.title = f"{streamer_name} - {self.quality}"
@@ -107,6 +110,7 @@ class Recording:
             "platform_key": self.platform_key,
             "only_notify_no_record": self.only_notify_no_record,
             "flv_use_direct_download": self.flv_use_direct_download,
+            "scheme_url": self.scheme_url,
             "video_bitrate": self.video_bitrate,
         }
 
@@ -136,6 +140,7 @@ class Recording:
         recording.last_duration_str = data.get("last_duration")
         recording.platform = data.get("platform")
         recording.platform_key = data.get("platform_key")
+        recording.scheme_url = data.get("scheme_url", "")
         if recording.last_duration_str is not None:
             recording.last_duration = timedelta(seconds=float(recording.last_duration_str))
         return recording

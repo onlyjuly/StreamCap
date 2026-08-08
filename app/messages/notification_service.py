@@ -16,6 +16,15 @@ class NotificationService:
     def __init__(self):
         self.headers = {"Content-Type": "application/json"}
 
+    @staticmethod
+    def _rfc2047_encode(value: str) -> str:
+        """Encode to RFC 2047 if contains non-ASCII characters (for HTTP headers)."""
+        try:
+            value.encode("ascii")
+            return value
+        except UnicodeEncodeError:
+            return Header(value, "utf-8").encode()
+
     async def _async_post(self, url: str, json_data: dict[str, Any], proxy: str | None = None) -> dict[str, Any]:
         try:
             async with httpx.AsyncClient(proxy=proxy) as client:
@@ -172,33 +181,41 @@ class NotificationService:
     ) -> dict[str, Any]:
         results = {"success": [], "error": []}
         api_list = api.replace("，", ",").split(",") if api.strip() else []
-        tags = tags.replace("，", ",").split(",") if tags else ["partying_face"]
-        actions = [{"action": "view", "label": "view live", "url": action_url}] if action_url else []
+        tags_list = tags.replace("，", ",").split(",") if tags else ["partying_face"]
         for _api in api_list:
-            server, topic = _api.rsplit("/", maxsplit=1)
-            json_data = {
-                "topic": topic,
-                "title": title,
-                "message": content,
-                "tags": tags,
-                "priority": priority,
-                "attach": attach,
-                "filename": filename,
-                "click": click,
-                "actions": actions,
-                "markdown": False,
-                "icon": icon,
-                "delay": delay,
-                "email": email,
-                "call": call,
-            }
+            try:
+                headers = {
+                    "Title": self._rfc2047_encode(title),
+                    "Priority": str(priority),
+                    "Tags": ",".join(self._rfc2047_encode(t) for t in tags_list),
+                }
+                if attach:
+                    headers["Attach"] = attach
+                if click:
+                    headers["Click"] = click
+                if icon:
+                    headers["Icon"] = icon
+                if delay:
+                    headers["Delay"] = delay
+                if email:
+                    headers["Email"] = email
+                if call:
+                    headers["Call"] = call
+                if action_url:
+                    headers["Actions"] = f"view, 打开直播间, {action_url}"
 
-            resp = await self._async_post(_api, json_data)
-            if "error" not in resp:
-                results["success"].append(_api)
-            else:
+                async with httpx.AsyncClient() as client:
+                    response = await client.post(_api, content=content, headers=headers)
+                    response.raise_for_status()
+                    resp = response.json()
+                    if "error" not in resp:
+                        results["success"].append(_api)
+                    else:
+                        results["error"].append(_api)
+                        logger.info(f"Ntfy push failed, push address: {_api},  Failure message: {resp.get('error')}")
+            except Exception as e:
+                logger.info(f"Ntfy push failed, push address: {_api},  Error message: {e}")
                 results["error"].append(_api)
-                logger.info(f"Ntfy push failed, push address: {_api},  Failure message: {json_data.get('error')}")
         return results
 
     async def send_to_serverchan(

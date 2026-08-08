@@ -386,7 +386,9 @@ class RecordingManager:
                 msg_title = user_config.get("custom_notification_title").strip()
                 msg_title = msg_title or self._["status_notify"]
 
-                BackgroundService.get_instance().add_task(msg_manager.push_messages_sync, msg_title, push_content)
+                BackgroundService.get_instance().add_task(
+                    msg_manager.push_messages_sync, msg_title, push_content, recording.url, recording.scheme_url
+                )
                 recording.notified_live_start = True
 
             if not recording.only_notify_no_record:

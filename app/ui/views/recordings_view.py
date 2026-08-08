@@ -499,6 +499,7 @@ class RecordingsPage(PageBase):
                     enabled_message_push=recording_info["enabled_message_push"],
                     only_notify_no_record=recording_info["only_notify_no_record"],
                     flv_use_direct_download=recording_info["flv_use_direct_download"],
+                    scheme_url=recording_info.get("scheme_url", ""),
                     video_bitrate=recording_info["video_bitrate"],
                 )
             else:
@@ -518,6 +519,7 @@ class RecordingsPage(PageBase):
                     enabled_message_push=False,
                     only_notify_no_record=user_config.get("only_notify_no_record"),
                     flv_use_direct_download=user_config.get("flv_use_direct_download"),
+                    scheme_url="",
                     video_bitrate=None,
                 )
 

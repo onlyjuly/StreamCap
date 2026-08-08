@@ -302,6 +302,15 @@ class RecordingDialog:
             width=500,
         )
 
+        scheme_url_field = ft.TextField(
+            label=self._["scheme_url"],
+            hint_text=self._["scheme_url_hint"],
+            border_radius=5,
+            filled=False,
+            expand=True,
+            value=initial_values.get("scheme_url", ""),
+        )
+
         hint_text_dict = {
             "en": "Example:\n0，https://v.douyin.com/AbcdE，nickname1\n0，https://v.douyin.com/EfghI，nickname2\n\nPS: "
             "0=original image or Blu ray, 1=ultra clear, 2=high-definition, 3=standard definition, 4=smooth\n",
@@ -356,6 +365,7 @@ class RecordingDialog:
                                         *time_rows,
                                         message_push_dropdown,
                                         no_record_dropdown,
+                                        scheme_url_field,
                                     ],
                                     tight=True,
                                     spacing=10,
@@ -440,6 +450,7 @@ class RecordingDialog:
                         "enabled_message_push": message_push_dropdown.value == "true",
                         "only_notify_no_record": no_record_dropdown.value == "true",
                         "flv_use_direct_download": flv_use_direct_download_dropdown.value == "true",
+                        "scheme_url": scheme_url_field.value.strip(),
                     }
                 ]
 

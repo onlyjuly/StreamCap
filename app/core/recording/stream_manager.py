@@ -816,7 +816,7 @@ class LiveStreamRecorder:
             msg_title = user_config.get("custom_notification_title").strip()
             msg_title = msg_title or self._["status_notify"]
 
-            self.services.run_coro(msg_manager.push_messages(msg_title, push_content))
+            self.services.run_coro(msg_manager.push_messages(msg_title, push_content, self.recording.url, self.recording.scheme_url))
 
     def request_stop(self):
         logger.info(f"Stop requested for recorder: {self.recording.url}, rec_id: {self.recording.rec_id}")

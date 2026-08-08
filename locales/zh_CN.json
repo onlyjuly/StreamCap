@@ -94,6 +94,8 @@
     "monitor_hours": "每日监听小时数",
     "enable_message_push": "是否开启消息推送",
     "only_notify_no_record": "仅通知不录制",
+    "scheme_url": "Scheme URL",
+    "scheme_url_hint": "可默认不填，用于深度链接跳转",
     "batch_input_tip": "批量录入（每行一条记录）",
     "single_input": "单个录入",
     "batch_input": "批量录入",

@@ -84,15 +84,15 @@ class MessagePusher:
         if result.get("error") or (not result.get("success") and not result.get("error")):
             logger.error(f"Push {service_name} message failed: {result['error']}")
 
-    def push_messages_sync(self, msg_title: str, push_content: str) -> None:
+    def push_messages_sync(self, msg_title: str, push_content: str, live_url: str = "", scheme_url: str = "") -> None:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            loop.run_until_complete(self.push_messages(msg_title, push_content))
+            loop.run_until_complete(self.push_messages(msg_title, push_content, live_url, scheme_url))
         finally:
             loop.close()
 
-    async def push_messages(self, msg_title: str, push_content: str) -> None:
+    async def push_messages(self, msg_title: str, push_content: str, live_url: str = "", scheme_url: str = "") -> None:
         """Push messages to all enabled notification services"""
         if self.settings.user_config.get("dingtalk_enabled"):
             result = await self.notifier.send_to_dingtalk(
@@ -125,7 +125,8 @@ class MessagePusher:
                 title=msg_title,
                 content=push_content,
                 tags=self.settings.user_config.get("ntfy_tags"),
-                action_url=self.settings.user_config.get("ntfy_action_url"),
+                action_url=live_url,
+                click=scheme_url,
                 email=self.settings.user_config.get("ntfy_email"),
             )
             self.log_push_result("Ntfy", result)
