@@ -1,3 +1,5 @@
+import re
+
 import streamget
 from deprecated import deprecated
 
@@ -511,7 +513,15 @@ class WeiboHandler(PlatformHandler):
         if not self.live_stream:
             self.live_stream = streamget.WeiboLiveStream(proxy_addr=self.proxy, cookies=self.cookies)
         json_data = await self.live_stream.fetch_web_stream_data(url=live_url)
-        return await self.live_stream.fetch_stream_url(json_data, self.record_quality)
+        stream_data = await self.live_stream.fetch_stream_url(json_data, self.record_quality)
+        # Strip quality suffix (e.g. _wb720avc) from all URLs for highest quality
+        for attr in ('flv_url', 'record_url', 'm3u8_url'):
+            url = getattr(stream_data, attr, None)
+            if url:
+                setattr(stream_data, attr, re.sub(r'_[a-zA-Z0-9]+\.(flv|m3u8)$', r'.\1', url))
+        if stream_data.flv_url:
+            stream_data.record_url = stream_data.flv_url
+        return stream_data
 
 
 class KugouHandler(PlatformHandler):
